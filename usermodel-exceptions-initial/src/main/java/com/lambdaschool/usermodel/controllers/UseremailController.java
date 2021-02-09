@@ -1,18 +1,17 @@
 package com.lambdaschool.usermodel.controllers;
 
+import com.lambdaschool.usermodel.models.ErrorDetail;
 import com.lambdaschool.usermodel.models.Useremail;
 import com.lambdaschool.usermodel.services.UseremailService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -38,6 +37,9 @@ public class UseremailController
      *
      * @return JSON list of all users emails
      */
+    @ApiOperation(value = "returns a list of user emails",
+        response = Useremail.class,
+        responseContainer = "List")
     @GetMapping(value = "/useremails",
             produces = "application/json")
     public ResponseEntity<?> listAllUseremails()
@@ -54,9 +56,24 @@ public class UseremailController
      * @param useremailId the primary key of the user email combination you seek
      * @return JSON object of the user email combination you seek with a status of OK
      */
+    @ApiOperation(value = "retrieve a useremail base of on id",
+        response = Useremail.class)
+    @ApiResponses(value = {
+        @ApiResponse(
+            code = 200,
+            message = "User email found",
+            response = Useremail.class),
+        @ApiResponse(
+            code = 404,
+            message = "User email not found",
+            response = ErrorDetail.class)
+    })
     @GetMapping(value = "/useremail/{useremailId}",
             produces = "application/json")
     public ResponseEntity<?> getUserEmailById(
+            @ApiParam(value = "useremail id",
+                required = true,
+                example = "2")
             @PathVariable
                     Long useremailId)
     {
@@ -89,10 +106,28 @@ public class UseremailController
      * @param emailaddress The new email (String)
      * @return Status of OK
      */
+    @ApiOperation(value = "updates a full useremail object",
+            response = Void.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "User email found",
+                    response = Void.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "User email not found",
+                    response = ErrorDetail.class)
+    })
     @PutMapping("/useremail/{useremailid}/email/{emailaddress}")
     public ResponseEntity<?> updateUserEmail(
+            @ApiParam(value = "useremail id",
+                required = true,
+                example = "2")
             @PathVariable
                     long useremailid,
+            @ApiParam(value = "user email address",
+                required = true,
+                example = "john@email.com")
             @PathVariable
                     String emailaddress)
     {

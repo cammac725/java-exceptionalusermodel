@@ -1,20 +1,17 @@
 package com.lambdaschool.usermodel.controllers;
 
+import com.lambdaschool.usermodel.models.ErrorDetail;
 import com.lambdaschool.usermodel.models.User;
 import com.lambdaschool.usermodel.services.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -42,6 +39,9 @@ public class UserController
      * @return JSON list of all users with a status of OK
      * @see UserService#findAll() UserService.findAll()
      */
+    @ApiOperation(value = "returns all users",
+        response = User.class,
+        responseContainer = "List")
     @GetMapping(value = "/users",
             produces = "application/json")
     public ResponseEntity<?> listAllUsers()
@@ -59,9 +59,24 @@ public class UserController
      * @return JSON object of the user you seek
      * @see UserService#findUserById(long) UserService.findUserById(long)
      */
+    @ApiOperation(value = "retrieve a user based on a user id",
+        response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "User found",
+                    response = User.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "User not found",
+                    response = ErrorDetail.class)
+    })
     @GetMapping(value = "/user/{userId}",
             produces = "application/json")
     public ResponseEntity<?> getUserById(
+            @ApiParam(value = "User id",
+                required = true,
+                example = "4")
             @PathVariable
                     Long userId)
     {
@@ -78,9 +93,24 @@ public class UserController
      * @return JSON object of the user you seek
      * @see UserService#findByName(String) UserService.findByName(String)
      */
+    @ApiOperation(value = "retrieve a user based on a user name",
+            response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "User found",
+                    response = User.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "User not found",
+                    response = ErrorDetail.class)
+    })
     @GetMapping(value = "/user/name/{userName}",
             produces = "application/json")
     public ResponseEntity<?> getUserByName(
+            @ApiParam(value = "user name",
+                required = true,
+                example = "John Doe")
             @PathVariable
                     String userName)
     {
@@ -156,12 +186,29 @@ public class UserController
      * @return status of OK
      * @see UserService#save(User) UserService.save(User)
      */
+    @ApiOperation(value = "updates a user given in the request body",
+            response = Void.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "User found",
+                    response = Void.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "User not found",
+                    response = ErrorDetail.class)
+    })
     @PutMapping(value = "/user/{userid}",
             consumes = "application/json")
     public ResponseEntity<?> updateFullUser(
+            @ApiParam(value = "a full user object",
+                required = true)
             @Valid
             @RequestBody
                     User updateUser,
+            @ApiParam(value = "user id",
+                required = true,
+                example = "4")
             @PathVariable
                     long userid)
     {

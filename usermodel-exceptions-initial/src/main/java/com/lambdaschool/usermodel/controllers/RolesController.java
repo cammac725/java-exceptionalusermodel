@@ -1,18 +1,17 @@
 package com.lambdaschool.usermodel.controllers;
 
+import com.lambdaschool.usermodel.models.ErrorDetail;
 import com.lambdaschool.usermodel.models.Role;
 import com.lambdaschool.usermodel.services.RoleService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -44,6 +43,9 @@ public class RolesController
      * @return JSON List of all the roles and their associated users
      * @see RoleService#findAll() RoleService.findAll()
      */
+    @ApiOperation(value = "returns all roles",
+        response = Role.class,
+        responseContainer = "List")
     @GetMapping(value = "/roles",
             produces = "application/json")
     public ResponseEntity<?> listRoles()
@@ -61,11 +63,26 @@ public class RolesController
      * @return JSON object of the role you seek
      * @see RoleService#findRoleById(long) RoleService.findRoleById(long)
      */
+    @ApiOperation(value = "retrieve a role based on a role id",
+        response = Role.class)
+    @ApiResponses(value = {
+        @ApiResponse(
+            code = 200,
+            message = "Role found",
+            response = Role.class),
+        @ApiResponse(
+            code = 404,
+            message = "Role not found",
+            response = ErrorDetail.class)
+    })
     @GetMapping(value = "/role/{roleId}",
-            produces = "application/json")
+        produces = "application/json")
     public ResponseEntity<?> getRoleById(
-            @PathVariable
-                    Long roleId)
+        @ApiParam(value = "role id",
+            required = true,
+            example = "3")
+        @PathVariable
+                Long roleId)
     {
         Role r = roleService.findRoleById(roleId);
         return new ResponseEntity<>(r,
@@ -80,9 +97,24 @@ public class RolesController
      * @return JSON object of the role you seek
      * @see RoleService#findByName(String) RoleService.findByName(String)
      */
+    @ApiOperation(value = "retrieve a role based on a role name",
+            response = Role.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Role found",
+                    response = Role.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Role not found",
+                    response = ErrorDetail.class)
+    })
     @GetMapping(value = "/role/name/{roleName}",
             produces = "application/json")
     public ResponseEntity<?> getRoleByName(
+            @ApiParam(value = "role name",
+                required = true,
+                example = "John Doe")
             @PathVariable
                     String roleName)
     {
@@ -131,14 +163,30 @@ public class RolesController
      * @param newRole The new name (String) for the role
      * @return Status of OK
      */
+    @ApiOperation(value = "updates a role given in the request body",
+            response = Void.class)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Role found",
+                    response = Void.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Role not found",
+                    response = ErrorDetail.class)
+    })
     @PutMapping(value = "/role/{roleid}",
             consumes = {"application/json"})
     public ResponseEntity<?> putUpdateRole(
-            @PathVariable
-                    long roleid,
+            @ApiParam(value = "a full role object",
+                required = true)
             @Valid
-            @RequestBody
-                    Role newRole)
+            @RequestBody Role newRole,
+            @ApiParam(value = "role id",
+                required = true,
+                example = "3")
+            @PathVariable
+                    long roleid)
     {
         newRole = roleService.update(roleid,
                                      newRole);

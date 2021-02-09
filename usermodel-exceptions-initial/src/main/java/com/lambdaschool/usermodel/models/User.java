@@ -2,15 +2,10 @@ package com.lambdaschool.usermodel.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +15,8 @@ import java.util.Set;
 /**
  * The entity allowing interaction with the users table
  */
+@ApiModel(value = "User",
+    description = "A user record")
 @Entity
 @Table(name = "users")
 public class User
@@ -28,6 +25,10 @@ public class User
     /**
      * The primary key (long) of the users table.
      */
+    @ApiModelProperty(name = "user id",
+        value = "primary key for user",
+        required = true,
+        example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long userid;
@@ -35,6 +36,10 @@ public class User
     /**
      * The username (String). Cannot be null and must be unique
      */
+    @ApiModelProperty(name = "user name",
+        value = "full name of user",
+        required = true,
+        example = "John Doe")
     @Column(nullable = false,
             unique = true)
     private String username;
@@ -42,6 +47,10 @@ public class User
     /**
      * The password (String) for this user. Cannot be null. Never get displayed
      */
+    @ApiModelProperty(name = "password",
+        value = "user password",
+        required = true,
+        example = "password")
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -49,6 +58,10 @@ public class User
     /**
      * Primary email account of user. Could be used as the userid. Cannot be null and must be unique.
      */
+    @ApiModelProperty(name = "user email",
+        value = "user email address",
+        required = true,
+        example = "john@email.com")
     @Column(nullable = false,
             unique = true)
     @Email

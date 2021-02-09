@@ -1,15 +1,10 @@
 package com.lambdaschool.usermodel.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 
 /**
@@ -17,6 +12,8 @@ import javax.validation.constraints.Email;
  * <p>
  * requires each combination of user and useremail to be unique. The same email cannot be assigned to the same user more than once.
  */
+@ApiModel(value = "useremail",
+    description = "user email record")
 @Entity
 @Table(name = "useremails")
 public class Useremail
@@ -25,6 +22,10 @@ public class Useremail
     /**
      * The primary key (long) of the useremails table
      */
+    @ApiModelProperty(name = "user email id",
+        value = "primary key of useremail",
+        required = true,
+        example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long useremailid;
@@ -33,6 +34,10 @@ public class Useremail
      * Email (String) for this user. Cannot be nullable.
      * Must be in the format userid@domain.upperLevelDomain
      */
+    @ApiModelProperty(name = "user email",
+        value = "a user email address",
+        required = true,
+        example = "john@email.com")
     @Column(nullable = false)
     @Email
     private String useremail;
