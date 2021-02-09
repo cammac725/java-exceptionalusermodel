@@ -63,8 +63,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             Object body,
             HttpHeaders headers,
             HttpStatus status,
-            WebRequest request
-    ) {
+            WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimestamp(new Date());
         errorDetail.setStatus(status.value());
