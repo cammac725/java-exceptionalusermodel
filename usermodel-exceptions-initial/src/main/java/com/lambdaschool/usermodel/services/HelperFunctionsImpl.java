@@ -1,6 +1,10 @@
 package com.lambdaschool.usermodel.services;
 
+import com.lambdaschool.usermodel.exceptions.ResourceNotFoundException;
 import com.lambdaschool.usermodel.models.ValidationError;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -32,5 +36,20 @@ public class HelperFunctionsImpl implements HelperFunctions{
             }
         }
         return listVE;
+    }
+
+    @Override
+    public boolean isAuthorizedToMakeChange(String username) {
+        // true - if authenticated user is changing themselves
+        // true - if authenticated user is admin
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (username.equalsIgnoreCase(authentication.getName()) ||
+            authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            return true;
+        } else {
+            throw new ResourceNotFoundException(authentication.getName() + " not authorized to make changes");
+        }
     }
 }

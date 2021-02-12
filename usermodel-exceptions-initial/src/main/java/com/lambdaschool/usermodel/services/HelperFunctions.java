@@ -8,4 +8,6 @@ public interface HelperFunctions {
 
     List<ValidationError> getConstraintViolations(Throwable cause);
 
+    boolean isAuthorizedToMakeChange(String username);
+
 }

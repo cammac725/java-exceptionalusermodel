@@ -33,6 +33,9 @@ public class UserServiceImpl
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private HelperFunctions helperFunctions;
+
     public User findUserById(long id) throws
             ResourceNotFoundException
     {
@@ -93,29 +96,22 @@ public class UserServiceImpl
             newUser.setUserid(user.getUserid());
         }
 
-        newUser.setUsername(user.getUsername()
-                                    .toLowerCase());
+        newUser.setUsername(user.getUsername().toLowerCase());
         newUser.setNoEncodePassword(user.getPassword());
-        newUser.setPrimaryemail(user.getPrimaryemail()
-                                        .toLowerCase());
+        newUser.setPrimaryemail(user.getPrimaryemail().toLowerCase());
 
-        newUser.getRoles()
-                .clear();
+        newUser.getRoles().clear();
         for (UserRoles ur : user.getRoles())
         {
-            Role addRole = roleService.findRoleById(ur.getRole()
-                                                            .getRoleid());
-            newUser.getRoles()
-                    .add(new UserRoles(newUser, addRole));
+            Role addRole = roleService.findRoleById(ur.getRole().getRoleid());
+            newUser.getRoles().add(new UserRoles(newUser, addRole));
         }
 
-        newUser.getUseremails()
-                .clear();
+        newUser.getUseremails().clear();
         for (Useremail ue : user.getUseremails())
         {
-            newUser.getUseremails()
-                    .add(new Useremail(newUser,
-                                       ue.getUseremail()));
+            newUser.getUseremails().add(new Useremail(newUser,
+                    ue.getUseremail()));
         }
 
         return userrepos.save(newUser);
@@ -129,52 +125,49 @@ public class UserServiceImpl
     {
         User currentUser = findUserById(id);
 
-        if (user.getUsername() != null)
-        {
-            currentUser.setUsername(user.getUsername()
-                                            .toLowerCase());
-        }
+        if (helperFunctions.isAuthorizedToMakeChange(currentUser.getUsername())) {
 
-        if (user.getPassword() != null)
-        {
-            currentUser.setNoEncodePassword(user.getPassword());
-        }
 
-        if (user.getPrimaryemail() != null)
-        {
-            currentUser.setPrimaryemail(user.getPrimaryemail()
-                                                .toLowerCase());
-        }
-
-        if (user.getRoles()
-                .size() > 0)
-        {
-            currentUser.getRoles()
-                    .clear();
-            for (UserRoles ur : user.getRoles())
+            if (user.getUsername() != null)
             {
-                Role addRole = roleService.findRoleById(ur.getRole()
-                                                                .getRoleid());
-
-                currentUser.getRoles()
-                        .add(new UserRoles(currentUser, addRole));
+                currentUser.setUsername(user.getUsername().toLowerCase());
             }
-        }
 
-        if (user.getUseremails()
-                .size() > 0)
-        {
-            currentUser.getUseremails()
-                    .clear();
-            for (Useremail ue : user.getUseremails())
+            if (user.getPassword() != null)
             {
-                currentUser.getUseremails()
-                        .add(new Useremail(currentUser,
-                                           ue.getUseremail()));
+                currentUser.setNoEncodePassword(user.getPassword());
             }
-        }
 
-        return userrepos.save(currentUser);
+            if (user.getPrimaryemail() != null)
+            {
+                currentUser.setPrimaryemail(user.getPrimaryemail().toLowerCase());
+            }
+
+            if (user.getRoles().size() > 0)
+            {
+                currentUser.getRoles().clear();
+                for (UserRoles ur : user.getRoles())
+                {
+                    Role addRole = roleService.findRoleById(ur.getRole().getRoleid());
+
+                    currentUser.getRoles().add(new UserRoles(currentUser, addRole));
+                }
+            }
+
+            if (user.getUseremails().size() > 0)
+            {
+                currentUser.getUseremails().clear();
+                for (Useremail ue : user.getUseremails())
+                {
+                    currentUser.getUseremails().add(new Useremail(currentUser,
+                            ue.getUseremail()));
+                }
+            }
+
+            return userrepos.save(currentUser);
+        } else {
+            throw new ResourceNotFoundException("This user is not authorized to make this change.");
+        }
     }
 
     @Transactional
